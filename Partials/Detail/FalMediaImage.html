@@ -4,7 +4,7 @@
 	<f:if condition="{mediaElement.link}">
 		<f:then>
 			<f:link.page pageUid="{mediaElement.link}" target="{n:targetLink(link:mediaElement.link)}">
-				<f:image src="{mediaElement.uid}" treatIdAsReference="1" title="{mediaElement.title}" alt="{mediaElement.alternative} class="img-fluid" maxWidth="{settings.detail.media.image.maxWidth}" maxHeight="{settings.detail.media.image.maxHeight}" />
+				<f:image src="{mediaElement.uid}" treatIdAsReference="1" title="{mediaElement.title}" alt="{mediaElement.alternative}" class="img-fluid" maxWidth="{settings.detail.media.image.maxWidth}" maxHeight="{settings.detail.media.image.maxHeight}" />
 			</f:link.page>
 		</f:then>
 		<f:else>
