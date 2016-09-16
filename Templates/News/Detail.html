@@ -1,0 +1,281 @@
+{namespace n=GeorgRinger\News\ViewHelpers}
+{namespace u=FrankSchmelcher\urb_news\ViewHelpers}
+
+<f:layout name="Detail.html" />
+
+<!--
+	=====================
+		News/Detail.html
+-->
+<f:section name="content">
+	<f:if condition="{newsItem}">
+		<f:then>
+			<n:format.nothing>
+				<n:excludeDisplayedNews newsItem="{newsItem}" />
+				<f:if condition="{newsItem.alternativeTitle}">
+					<f:then>
+						<n:titleTag>
+							<n:format.htmlentitiesDecode>{newsItem.alternativeTitle}</n:format.htmlentitiesDecode>
+						</n:titleTag>
+					</f:then>
+					<f:else>
+						<n:titleTag>
+							<n:format.htmlentitiesDecode>{newsItem.title}</n:format.htmlentitiesDecode>
+						</n:titleTag>
+					</f:else>
+				</f:if>
+				<f:render partial="Detail/Opengraph" arguments="{newsItem: newsItem, settings:settings}" />
+			</n:format.nothing>
+			<div class="header col-xs-12">
+				<h1 itemprop="headline">{newsItem.title}</h1>
+			</div>
+
+<f:comment>
+			<div class="footer">
+				<p>
+					<!-- date -->
+					<span class="news-list-date">
+						<time datetime="{f:format.date(date:newsItem.datetime, format:'Y-m-d')}">
+							<f:format.date format="{f:translate(key:'dateFormat')}">{newsItem.datetime}</f:format.date>
+							<meta itemprop="datePublished" content="{f:format.date(date:newsItem.datetime, format:'Y-m-d')}" />
+						</time>
+					</span>
+
+					<f:if condition="{newsItem.categories}">
+						<f:render partial="Category/Items" arguments="{categories:newsItem.categories, settings:settings}" />
+					</f:if>
+
+					<f:if condition="{newsItem.tags}">
+						<!-- Tags -->
+						<span class="news-list-tags" itemprop="keywords">
+						<f:for each="{newsItem.tags}" as="tag">
+							{tag.title}
+						</f:for>
+						</span>
+					</f:if>
+
+					<f:if condition="{newsItem.author}">
+						<!-- author -->
+						<span class="news-list-author" itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person">
+							<f:translate key="author_simple" /> <span itemprop="name">{newsItem.author}</span>
+						</span>
+					</f:if>
+				</p>
+			</div>
+</f:comment>
+
+			<f:if condition="{newsItem.teaser}">
+				<!-- teaser -->
+				<div class="teaser-text lead col-xs-12" itemprop="description">
+					<f:format.html>{newsItem.teaser}</f:format.html>
+				</div>
+			</f:if>
+
+			<f:if condition="{newsItem.contentElements}">
+				<!-- content elements -->
+				<f:for each="{newsItem.contentElements}" as="element">
+					<f:if condition="{element.listType} == 'amazon_affiliate_piproducts'">
+						<f:cObject typoscriptObjectPath="lib.amazonContentElementDetailRendering">{newsItem.contentElementIdList}</f:cObject>
+					</f:if>
+				</f:for>
+			</f:if>
+
+			<div class="col-xs-12 news-DetailElement">
+				<f:render partial="Detail/FalMediaContainer" arguments="{media: newsItem.falMedia, settings:settings}" />
+				<f:render partial="Detail/MediaContainer" arguments="{media: newsItem.media, settings:settings}" />
+	
+				<!-- main text -->
+				<div class="news-text-wrap" itemprop="articleBody">
+					<f:format.html>{newsItem.bodytext}</f:format.html>
+				</div>
+			</div>
+
+			<f:if condition="{newsItem.contentElements}">
+				<!-- content elements -->
+				<f:for each="{newsItem.contentElements}" as="element">
+					<f:if condition="{element.listType} != 'amazon_affiliate_piproducts'">
+						<f:cObject typoscriptObjectPath="lib.tx_news.contentElementDetailRendering">{newsItem.contentElementIdList}</f:cObject>
+					</f:if>
+				</f:for>
+			</f:if>
+
+			<!-- categories -->	
+			<f:if condition="{newsItem.categories}">
+				<section class="cats-tags categories col-xs-12">
+					<f:for each="{newsItem.categories}" as="category" iteration="iteratorCategories">
+						<span class="category label label-info">
+							<f:link.page pageUid="{settings.catListPID}" additionalParams="{tx_news_pi1:{overwriteDemand:{categories:category.uid}}}">{category.title}</f:link.page>
+						</span>
+					</f:for>
+				</section>
+			</f:if>
+<f:comment>
+			<!-- tags -->
+			<f:if condition="{newsItem.tags}">
+				<section class="cats-tags tags col-xs-12">
+					<f:for each="{newsItem.tags}" as="tag">
+						<span class="tag label label-info">
+							<f:link.page pageUid="{settings.tagListPID}" additionalParams="{tx_news_pi1:{overwriteDemand:{tags: tag}}}">{tag.title}</f:link.page>
+						</span>
+					</f:for>
+				</section>
+			</f:if>
+</f:comment>
+
+			<f:if condition="{settings.backPid}">
+				<!-- Link Back -->
+				<div class="news-backlink-wrap col-xs-12">
+					<p class="back small">
+<f:comment>
+						<f:link.page pageUid="{settings.backPid}" class="back">
+							<f:translate key="back-link" />
+						</f:link.page>
+</f:comment>
+						<a href="javascript:history.back()" class="back"><f:translate key="back-link" /></a>
+					</p>
+				</div>
+			</f:if>
+
+			<f:if condition="{settings.detail.showSocialShareButtons}">
+				<f:comment>
+					<![CDATA[
+					Care about the privacy of your readers?
+					Checkout https://typo3.org/extensions/repository/view/rx_shariff
+					and integrate it here with:
+					<div xmlns:rx="http://typo3.org/ns/Reelworx/RxShariff/ViewHelper">
+						<rx:shariff services="facebook,xing,twitter" enableBackend="true" />
+					</div>
+					]]>
+				</f:comment>
+ 				<div class="facebook">
+					<div class="like">
+						<n:social.facebook.like />
+					</div>
+					<div class="share">
+						<n:social.facebook.share />
+					</div>
+					<div class="twitter">
+						<n:social.twitter>Twitter</n:social.twitter>
+					</div>
+				</div>
+			</f:if>
+
+			<f:if condition="{settings.detail.disqusShortname}">
+				<div id="disqus_thread"></div>
+				<n:social.disqus newsItem="{newsItem}"
+								 shortName="{settings.detail.disqusShortname}"
+								 link="{n:link(newsItem:newsItem, settings:settings, uriOnly:1, configuration:'{forceAbsoluteUrl:1}')}" />
+			</f:if>
+
+			<!-- related things -->
+			<div class="news-related-wrap col-xs-12">
+
+				<f:if condition="{newsItem.allRelatedSorted}">
+					<!-- Related news records -->
+					<div class="news-related news-related-news card">
+						<div class="card-block">
+							<h4>
+								<f:translate key="related-news" />
+							</h4>
+						</div>
+						<ul class="list-group list-group-flush">
+							<f:for each="{newsItem.allRelatedSorted}" as="related">
+								<li class="list-group-item">
+									<n:link newsItem="{related}" settings="{settings}" title="{related.title}"
+										>{related.title}
+									</n:link>
+									<time datetime=<n:format.date format="c" strftime="0">{related.datetime}</n:format.date>><small class="news-related-news-date text-muted"><f:format.date format="{f:translate(key:'dateFormat')}">{related.datetime}</f:format.date></small></time>
+								</li>
+
+							</f:for>
+						</ul>
+					</div>
+				</f:if>
+
+				<f:if condition="{newsItem.relatedFiles}">
+					<!-- Related files -->
+					<div class="news-related news-related-files card">
+						<div class="card-block">
+							<h4>
+								<f:translate key="related-files" />
+							</h4>
+						</div>
+						<ul class="list-group list-group-flush">
+							<f:for each="{newsItem.relatedFiles}" as="relatedFile">
+								<li class="list-group-item">
+									<span class="news-related-files-link">
+										<n:format.fileDownload file="uploads/tx_news/{relatedFile.file}" configuration="{settings.relatedFiles.download}">
+											<f:if condition="{relatedFile.title}">
+												<f:then
+													>{relatedFile.title}
+												</f:then>
+												<f:else
+													>{relatedFile.file}
+												</f:else>
+											</f:if>
+										</n:format.fileDownload>
+									</span>
+									<span class="news-related-files-size">
+										<n:format.fileSize file="uploads/tx_news/{relatedFile.file}" format="{settings.relatedFiles.fileSizeLabels}" />
+									</span>
+								</li>
+							</f:for>
+						</ul>
+					</div>
+				</f:if>
+
+				<f:if condition="{newsItem.falRelatedFiles}">
+					<!-- FAL related files -->
+					<div class="news-related news-related-files card">
+						<div class="card-block">
+							<h4>
+								<f:translate key="related-files" />
+							</h4>
+						</div>
+						<ul class="list-group list-group-flush">
+							<f:for each="{newsItem.falRelatedFiles}" as="relatedFile">
+								<li class="list-group-item">
+									<span class="news-related-files-link">
+										<a href="{relatedFile.originalResource.publicUrl -> f:format.htmlspecialchars()}" download>
+											{f:if(condition:relatedFile.originalResource.title, then:relatedFile.originalResource.title, else:relatedFile.originalResource.name)}
+										</a>
+									</span>
+									<small class="news-related-files-size text-muted">
+										{relatedFile.originalResource.size -> f:format.bytes()}
+									</small>
+									<small class="news-related-files-description">
+										{relatedFile.originalResource.description -> f:format.raw()}
+									</small>
+								</li>
+							</f:for>
+						</ul>
+					</div>
+				</f:if>
+
+				<f:if condition="{newsItem.relatedLinks}">
+					<!-- Related links -->
+					<div class="news-related news-related-links card">
+						<div class="card-block">
+							<h4>
+								<f:translate key="related-links" />
+							</h4>
+						</div>
+						<ul class="list-group list-group-flush">
+							<f:for each="{newsItem.relatedLinks}" as="relatedLink">
+								<li class="list-group-item">
+									<span class="news-related-link"><f:link.page pageUid="{relatedLink.uri}" title="{relatedLink.title}" target="{n:targetLink(link:relatedLink.uri)}">{f:if(condition: relatedLink.title, then: relatedLink.title, else: relatedLink.uri)}</f:link.page></span>
+									<f:if condition="{relatedLink.description}">
+										<small class="news-related-links-description">{relatedLink.description}</small>
+									</f:if>
+								</li>
+							</f:for>
+						</ul>
+					</div>
+				</f:if>
+			</div>
+		</f:then>
+		<f:else>
+
+		</f:else>
+	</f:if>
+</f:section>
