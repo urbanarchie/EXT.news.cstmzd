@@ -1,8 +1,6 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
 <f:layout name="Backend/Simple" />
-
-<f:section name="iconButtons">
-
-</f:section>
 
 <f:section name="content">
 	<h3 class="uppercase">
@@ -48,7 +46,7 @@
 
 	<script type="text/javascript">
 		var moduleUrl = '{f:format.raw(value: moduleUrl)}';
-		<![CDATA[
+		//<![CDATA[
 		Ext.namespace('Tx_News');
 
 		Tx_News.Common = function () {
@@ -83,12 +81,10 @@
 					params[parameterPrefix + '[' + key + ']'] = value;
 				});
 
-				var request = {
+				return {
 					'url': moduleUrl,
 					'params': params
 				};
-
-				return request;
 			};
 
 			return pub;
@@ -174,6 +170,7 @@
 		Ext.onReady(function () {
 			Tx_News.Importer.init();
 		});
-		]]>
+		//]]>
 	</script>
 </f:section>
+</html>
